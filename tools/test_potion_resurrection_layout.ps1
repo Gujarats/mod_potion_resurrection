@@ -32,4 +32,31 @@ Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'HighStock'
 )
 
+Assert-Contains 'scripts/skills/effects/resurrection_potion_effect.nut' @(
+    'effects.resurrection_potion',
+    'IsRemovedAfterBattle = false',
+    'function setTier',
+    'function getTier',
+    'function isTriggering',
+    'function setTriggering',
+    'writeString',
+    'readString'
+)
+
+Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
+    'canTrigger <- function',
+    'FatalityType.Kraken',
+    'FatalityType.Devoured',
+    'isScenarioMode()',
+    'isAutoRetreat()',
+    '_killer == null && _skill == null',
+    'isPlacedOnMap()',
+    'restoreArmorSlot',
+    'getBoundaryAverageLevel',
+    'getScaledPrice',
+    'scripts/entity/tactical/player',
+    'q.kill = @(__original)',
+    'return __original(_killer, _skill, _fatalityType, _silent)'
+)
+
 Write-Host 'Potion Resurrection layout validation passed.'
