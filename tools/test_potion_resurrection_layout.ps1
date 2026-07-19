@@ -105,4 +105,39 @@ Assert-Contains 'compat/mod_spawn_item_addon_potion_resurrection/scripts/!mods_p
     'ItemFilter.Usable'
 )
 
+$assetPaths = @(
+    'gfx/ui/items/consumables/resurrection_potion_normal.png',
+    'gfx/ui/items/consumables/resurrection_potion_medium.png',
+    'gfx/ui/items/consumables/resurrection_potion_high.png'
+)
+foreach ($assetPath in $assetPaths) {
+    Assert-FileExists $assetPath
+}
+
+Add-Type -AssemblyName System.Drawing
+$sourcePath = Join-Path (Split-Path -Parent $projectRoot) 'data_001/gfx/ui/items/consumables/potion_38.png'
+$sourceImage = [System.Drawing.Bitmap]::new($sourcePath)
+$assetHashes = @()
+try {
+    foreach ($assetPath in $assetPaths) {
+        $fullPath = Join-Path $projectRoot $assetPath
+        $image = [System.Drawing.Bitmap]::new($fullPath)
+        try {
+            if ($image.Width -ne $sourceImage.Width -or $image.Height -ne $sourceImage.Height) {
+                throw "Asset dimensions differ from potion_38.png: $assetPath"
+            }
+        }
+        finally {
+            $image.Dispose()
+        }
+        $assetHashes += (Get-FileHash -Algorithm SHA256 -LiteralPath $fullPath).Hash
+    }
+}
+finally {
+    $sourceImage.Dispose()
+}
+if (($assetHashes | Select-Object -Unique).Count -ne 3) {
+    throw 'The three potion assets must be visually distinct files.'
+}
+
 Write-Host 'Potion Resurrection layout validation passed.'
