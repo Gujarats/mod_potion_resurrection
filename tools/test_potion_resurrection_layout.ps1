@@ -140,4 +140,36 @@ if (($assetHashes | Select-Object -Unique).Count -ne 3) {
     throw 'The three potion assets must be visually distinct files.'
 }
 
+Assert-Contains 'tools/build_release.ps1' @(
+    'mod_potion_resurrection.zip',
+    'mod_spawn_item_addon_potion_resurrection.zip',
+    'Compress-Archive',
+    'scripts',
+    'gfx'
+)
+Assert-Contains 'test-results/potion-resurrection-manual-matrix.md' @(
+    'Consumption and replacement',
+    'Save/load persistence',
+    'Kraken exclusion',
+    'Market distribution',
+    'Item spawner compatibility'
+)
+
+$forbidden = Get-ChildItem -Recurse -File -LiteralPath $projectRoot | Where-Object {
+    $_.Name -like '*.sublime-project' -or $_.FullName -like '*\data_001\*'
+}
+if ($forbidden) {
+    throw "Forbidden packaged/reference file found: $($forbidden[0].FullName)"
+}
+
+$nutFiles = Get-ChildItem -Recurse -File -Filter '*.nut' -LiteralPath $projectRoot
+foreach ($nutFile in $nutFiles) {
+    $content = Get-Content -Raw -LiteralPath $nutFile.FullName
+    $openBraces = ([regex]::Matches($content, '\{')).Count
+    $closeBraces = ([regex]::Matches($content, '\}')).Count
+    if ($openBraces -ne $closeBraces) {
+        throw "Unbalanced braces in $($nutFile.FullName)"
+    }
+}
+
 Write-Host 'Potion Resurrection layout validation passed.'
