@@ -93,4 +93,16 @@ Assert-Contains 'scripts/mods/potion_resurrection_market.nut' @(
     '_stash.sort()'
 )
 
+Assert-Contains 'compat/mod_spawn_item_addon_potion_resurrection/scripts/!mods_preload/register_potion_resurrection_for_item_spawner.nut' @(
+    'mod_potion_resurrection_item_spawner_addon',
+    'mod_item_spawner',
+    'mod_potion_resurrection',
+    'queryItemUIData',
+    'misc.resurrection_potion_normal',
+    'misc.resurrection_potion_medium',
+    'misc.resurrection_potion_high',
+    'ItemFilter.All',
+    'ItemFilter.Usable'
+)
+
 Write-Host 'Potion Resurrection layout validation passed.'
