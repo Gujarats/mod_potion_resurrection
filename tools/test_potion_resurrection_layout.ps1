@@ -59,4 +59,25 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     'return __original(_killer, _skill, _fatalityType, _silent)'
 )
 
+Assert-Contains 'scripts/items/misc/resurrection_potion_item.nut' @(
+    'scripts/items/item',
+    'Const.Items.ItemType.Usable',
+    'function onUse',
+    'effects.resurrection_potion',
+    'removeByID',
+    'setTier',
+    'checkDrugEffect',
+    'sounds/bottle_01.wav',
+    'sounds/combat/drink_0'
+)
+
+$itemContracts = @{
+    'scripts/items/misc/resurrection_potion_normal_item.nut' = @('misc.resurrection_potion_normal', 'Tier = "normal"', 'resurrection_potion_normal.png')
+    'scripts/items/misc/resurrection_potion_medium_item.nut' = @('misc.resurrection_potion_medium', 'Tier = "medium"', 'resurrection_potion_medium.png')
+    'scripts/items/misc/resurrection_potion_high_item.nut' = @('misc.resurrection_potion_high', 'Tier = "high"', 'resurrection_potion_high.png')
+}
+foreach ($entry in $itemContracts.GetEnumerator()) {
+    Assert-Contains $entry.Key $entry.Value
+}
+
 Write-Host 'Potion Resurrection layout validation passed.'
