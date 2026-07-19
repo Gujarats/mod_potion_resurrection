@@ -80,4 +80,17 @@ foreach ($entry in $itemContracts.GetEnumerator()) {
     Assert-Contains $entry.Key $entry.Value
 }
 
+Assert-Contains 'scripts/mods/potion_resurrection_market.nut' @(
+    'scripts/entity/world/settlements/buildings/alchemist_building',
+    'q.onAfterFillStash = @(__original)',
+    'getSize() >= 3',
+    'RestrictHighToLargeSettlements',
+    'tier.SpawnChanceSetting',
+    'tier.StockSetting',
+    'misc/resurrection_potion_normal_item',
+    'misc/resurrection_potion_medium_item',
+    'misc/resurrection_potion_high_item',
+    '_stash.sort()'
+)
+
 Write-Host 'Potion Resurrection layout validation passed.'
