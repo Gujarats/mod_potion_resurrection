@@ -126,6 +126,59 @@
     item.setCondition(::PotionResurrection.clamp(condition, 0, item.getConditionMax()));
 };
 
+::PotionResurrection.playResurrectionAnimation <- function( _actor )
+{
+    if (_actor == null || !_actor.isAlive() || !_actor.isPlacedOnMap())
+    {
+        return;
+    }
+
+    try
+    {
+        local tile = _actor.getTile();
+        if (tile == null || !tile.IsVisibleForPlayer)
+        {
+            return;
+        }
+
+        if ("RaiseUndeadParticles" in ::Const.Tactical)
+        {
+            foreach (particle in ::Const.Tactical.RaiseUndeadParticles)
+            {
+                ::Tactical.spawnParticleEffect(
+                    true,
+                    particle.Brushes,
+                    tile,
+                    particle.Delay,
+                    particle.Quantity,
+                    particle.LifeTimeQuantity,
+                    particle.SpawnRate,
+                    particle.Stages
+                );
+            }
+        }
+
+        ::Tactical.spawnIconEffect(
+            "status_effect_151",
+            tile,
+            ::Const.Tactical.Settings.SkillIconOffsetX,
+            ::Const.Tactical.Settings.SkillIconOffsetY,
+            ::Const.Tactical.Settings.SkillIconScale,
+            ::Const.Tactical.Settings.SkillIconFadeInDuration,
+            ::Const.Tactical.Settings.SkillIconStayDuration,
+            ::Const.Tactical.Settings.SkillIconFadeOutDuration,
+            ::Const.Tactical.Settings.SkillIconMovement
+        );
+        ::Tactical.getCamera().quake(_actor.createVec(0, -1.0), 4.0, 0.25, 0.3);
+        _actor.riseFromGround(0.75);
+        ::PotionResurrection.debugLog("Native resurrection animation started for " + _actor.getName());
+    }
+    catch (error)
+    {
+        ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] Resurrection animation failed for " + _actor.getName() + ": " + error);
+    }
+};
+
 ::PotionResurrection.restore <- function( _actor, _effect )
 {
     local tierKey = _effect.getTier();
@@ -150,6 +203,7 @@
         _actor.setDirty(true);
 
         ::Tactical.EventLog.logEx(::Const.UI.getColorizedEntityName(_actor) + " is restored by a " + tier.Name + " Potion of Resurrection!");
+        ::PotionResurrection.playResurrectionAnimation(_actor);
         ::Sound.play("sounds/combat/drink_01.wav", ::Const.Sound.Volume.Tactical, _actor.getPos());
         ::PotionResurrection.debugLog("Resurrection restoration succeeded for " + _actor.getName() + "; hitpoints=" + _actor.getHitpoints().tostring());
         return true;

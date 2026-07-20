@@ -8,6 +8,7 @@ Automated static checks run in this repository. The following tests require Batt
 | Save/load persistence | Save and reload with each tier effect active | PENDING | Requires game runtime |
 | Multi-battle persistence | Finish battles without triggering the effect | PENDING | Requires game runtime |
 | Restoration | Trigger Normal, Medium, and High with body/head armor | PENDING | Requires game runtime |
+| Resurrection animation | Confirm particles, overhead icon, camera shake, native rise, and temporary non-attackable state | PENDING | Requires game runtime |
 | Armor edge cases | Trigger with empty and destroyed armor slots | PENDING | Requires game runtime |
 | Fatalities | Trigger on ordinary, DOT, decapitation, and disembowelment deaths | PENDING | Requires game runtime |
 | One charge | Die a second time after a successful resurrection | PENDING | Requires game runtime |

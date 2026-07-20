@@ -81,10 +81,24 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     'Resurrection eligibility rejected',
     'Resurrection restoration started',
     'Resurrection restoration succeeded',
+    'playResurrectionAnimation <- function',
+    'RaiseUndeadParticles',
+    'spawnIconEffect',
+    'status_effect_151',
+    'getCamera().quake',
+    'riseFromGround(0.75)',
+    'Resurrection animation failed',
     'scripts/entity/tactical/player',
     'q.kill = @(__original)',
     'return __original(_killer, _skill, _fatalityType, _silent)'
 )
+
+$serviceContent = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'scripts/mods/potion_resurrection_service.nut')
+$dirtyIndex = $serviceContent.IndexOf('_actor.setDirty(true);')
+$animationCallIndex = $serviceContent.IndexOf('::PotionResurrection.playResurrectionAnimation(_actor);')
+if ($dirtyIndex -lt 0 -or $animationCallIndex -le $dirtyIndex) {
+    throw 'Resurrection animation must run after restored actor state is refreshed.'
+}
 
 Assert-Contains 'scripts/items/misc/resurrection_potion_item.nut' @(
     'scripts/items/item',
