@@ -16,8 +16,8 @@ The known-limitations section will explain that the mod intercepts lethal damage
 
 ## Logging behavior
 
-The `EnableDebugLogging` MSU setting will default to `false`. Existing `[PotionResurrection]` log statements, their prefix, setting callback, and runtime behavior will remain intact. Players can re-enable diagnostic logging from the MSU General settings page when troubleshooting.
+Debug output will be disabled with `::PotionResurrection.Mod.Debug.disable();`, following the working `mod_aura_routing` pattern. The current `EnableDebugLogging` setting and callback will be removed so they cannot re-enable output after the hard-coded disable. Existing `[PotionResurrection]` log statements and their prefix will remain intact for a future configurable logging option.
 
 ## Verification
 
-Repository validation will assert that debug logging defaults to disabled while the callback and logging code remain present. README validation will assert the optional Item Spawner dependency and simulated-animation limitation are documented. The release archives will then be rebuilt and inspected.
+Repository validation will assert that `Debug.disable()` is called, the obsolete toggle wiring is absent, and the underlying logging code remains present. README validation will assert the optional Item Spawner dependency and simulated-animation limitation are documented. The release archives will then be rebuilt and inspected.
