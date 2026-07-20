@@ -51,12 +51,7 @@
     };
 
     local general = ::PotionResurrection.Mod.ModSettings.addPage("General");
-    local debugLogSetting = general.addBooleanSetting("EnableDebugLogging", true, "Enable Debug Logging", "Write potion consumption, battle activation, death interception, eligibility, and restoration details to the Battle Brothers log.");
-    debugLogSetting.addCallback(function(_data = null)
-    {
-        ::PotionResurrection.Mod.Debug.setFlag("default", this.getValue());
-    });
-    ::PotionResurrection.Mod.Debug.setFlag("default", debugLogSetting.getValue());
+    ::PotionResurrection.Mod.Debug.disable(); // TODO: Replace with a user setting when configurable logging returns.
     general.addRangeSetting("PriceScalingPct", 5, 0, 100, 1, "Price Scaling per Level (%)", "Applied for each averaged boundary level of the active roster.");
     general.addBooleanSetting("RestrictHighToLargeSettlements", true, "Restrict High Potions", "Only allow High potions in settlements of size 3 or larger.");
 

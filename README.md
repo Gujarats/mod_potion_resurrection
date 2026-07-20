@@ -1,25 +1,65 @@
 # Potion of Resurrection
 
-Battle Brothers mod adding Normal, Medium, and High resurrection potions.
+Potion of Resurrection adds Normal, Medium, and High consumable potions to Battle Brothers. Each potion gives one brother a permanent resurrection charge that is consumed on an eligible battlefield death.
 
-## Requirements
+## Features
+
+- Uses the vanilla potion-consumption workflow.
+- Drinking another tier replaces the brother's existing resurrection charge.
+- Restores configured hitpoints and armor on an eligible battlefield death.
+- Excludes Kraken devouring and scripted or cleanup deaths.
+- Adds configurable stock, rarity, price, restoration values, and high-tier settlement restriction through MSU.
+
+## Required dependencies
+
+The main mod requires:
 
 - Modern Hooks
 - MSU 1.9.0 or newer
-- `mod_spawn_item_main` only when using the separately packaged compatibility addon
 
-Drinking a potion uses the vanilla consumable workflow and applies one permanent resurrection charge. Drinking another tier replaces the existing charge. Eligible battlefield deaths restore configured health and armor; Kraken devouring and scripted or cleanup deaths are excluded.
+## Optional Item Spawner support
 
-Default restoration is 50% health/25% armor for Normal, 80%/50% for Medium, and 100%/100% for High. Every tier starts at 750 crowns. Price scaling uses `(highest active level + lowest active level) / 2` and defaults to 5% per averaged level.
+`mod_spawn_item_main` is optional. It is only required when you also install the separately packaged Item Spawner compatibility addon, which adds all three potions to Item Spawner search and spawn results.
 
-Normal, Medium, and High default to 100%/20%/5% availability and stock 2/1/1. High is restricted to size-3 settlements by default. All balance values are configurable through MSU.
+The main Potion of Resurrection archive does not require Item Spawner.
 
-`Enable Debug Logging` is enabled by default in the MSU General page. Diagnostic lines begin with `[PotionResurrection]` and report consumption, effect presence at combat start, lethal interception, eligibility decisions, and restoration results.
+## Default balance
 
-Install the contents of the main release archive into the Battle Brothers `data` directory. Do not remove the mod from a save while a brother carries its resurrection effect.
+| Tier | Health restored | Armor restored | Base price | Default availability | Default stock |
+|---|---:|---:|---:|---:|---:|
+| Normal | 50% | 25% | 750 crowns | 100% | 2 |
+| Medium | 80% | 50% | 750 crowns | 20% | 1 |
+| High | 100% | 100% | 750 crowns | 5% | 1 |
 
-## Release archives
+Prices scale from the averaged lowest and highest active roster levels, at 5% per averaged level by default. High potions are restricted to size-3 settlements by default.
 
-Run `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\build_release.ps1` from this project directory. It creates the main mod and the optional item-spawner addon as separate archives under `release/`.
+## Installation
 
-Automated repository validation does not execute the Battle Brothers engine. Complete the checklist in `test-results/potion-resurrection-manual-matrix.md` before publishing a release.
+1. Install Modern Hooks and MSU 1.9.0 or newer.
+2. Extract `mod_potion_resurrection.zip` into the Battle Brothers `data` directory.
+3. Optional: if you use Item Spawner, install `mod_spawn_item_main` and extract `mod_spawn_item_addon_potion_resurrection.zip` into the same `data` directory.
+
+Do not remove the main mod from a save while a brother has a resurrection effect.
+
+## Configuration and logging
+
+All gameplay and balance values are configurable through the MSU settings pages: health restoration, armor restoration, base price, level scaling, availability, stock, and High-potion settlement restriction.
+
+The diagnostic `[PotionResurrection]` log code is retained for troubleshooting, but logging is currently hard-disabled. It will be exposed as a user setting in a future update.
+
+## Known visual limitation
+
+The mod uses a simulated death sequence rather than Battle Brothers' real corpse pipeline. On a lethal hit, the actor fades out over 250 ms, remains hidden briefly, then returns with the native rise animation.
+
+This keeps resurrection safe and avoids corpse-side effects, but the simulated death transition can look slightly unusual. The actor does not first play the full vanilla death animation or become a real corpse.
+
+## Building and validation
+
+From this project directory, run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\test_potion_resurrection_layout.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\build_release.ps1
+```
+
+The build creates the main mod archive and the optional Item Spawner addon under `release/`. Automated checks do not run the Battle Brothers engine; complete `test-results/potion-resurrection-manual-matrix.md` before publishing a release.

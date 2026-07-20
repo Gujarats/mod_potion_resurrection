@@ -34,7 +34,6 @@ Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'Version = "1.0.4"',
     'mod_msu >= 1.9.0',
     'PriceScalingPct',
-    'EnableDebugLogging',
     'RestrictHighToLargeSettlements',
     'NormalHealthPct',
     'MediumHealthPct',
@@ -44,12 +43,14 @@ Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'HighStock',
     '::include("scripts/mods/potion_resurrection_service")',
     '::include("scripts/mods/potion_resurrection_market")',
-    'Mod.Debug.setFlag("default"',
-    'debugLogSetting.addCallback'
+    '::PotionResurrection.Mod.Debug.disable();'
 )
 Assert-NotContains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     '::include("mods/potion_resurrection_service")',
-    '::include("mods/potion_resurrection_market")'
+    '::include("mods/potion_resurrection_market")',
+    'EnableDebugLogging',
+    'debugLogSetting.addCallback',
+    'Mod.Debug.setFlag("default"'
 )
 
 Assert-Contains 'scripts/skills/effects/resurrection_potion_effect.nut' @(
@@ -233,6 +234,16 @@ Assert-Contains 'test-results/potion-resurrection-manual-matrix.md' @(
     'Kraken exclusion',
     'Market distribution',
     'Item spawner compatibility'
+)
+
+Assert-Contains 'README.md' @(
+    '## Required dependencies',
+    '## Optional Item Spawner support',
+    '## Installation',
+    '## Configuration and logging',
+    '## Known visual limitation',
+    '`mod_spawn_item_main` is optional',
+    'simulated death'
 )
 
 $forbidden = Get-ChildItem -Recurse -File -LiteralPath $projectRoot | Where-Object {
