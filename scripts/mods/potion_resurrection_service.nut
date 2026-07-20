@@ -8,6 +8,12 @@
     ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] " + _message);
 };
 
+::PotionResurrection.ResurrectionFadeDuration <- 250;
+::PotionResurrection.ResurrectionHiddenDuration <- 600;
+::PotionResurrection.ResurrectionRiseDuration <- 850;
+::PotionResurrection.ResurrectionAnimationSerial <- 0;
+::PotionResurrection.ActiveResurrectionSequences <- {};
+
 ::PotionResurrection.getBoundaryAverageLevel <- function()
 {
     if (!("World" in getroottable()) || ::World.getPlayerRoster() == null)
@@ -191,6 +197,157 @@
     }
 };
 
+::PotionResurrection.isResurrectionSequenceCurrent <- function( _data )
+{
+    if (_data == null || _data.Actor == null || ::Tactical.State == null || ::Tactical.State != _data.TacticalState)
+    {
+        return false;
+    }
+
+    local actor = _data.Actor;
+    if (!("PotionResurrectionAnimationToken" in actor.m)
+        || actor.m.PotionResurrectionAnimationToken != _data.Token
+        || !actor.isAlive()
+        || !actor.isPlacedOnMap())
+    {
+        return false;
+    }
+
+    local tile = actor.getTile();
+    return tile != null && tile.SquareCoords.X == _data.TileX && tile.SquareCoords.Y == _data.TileY;
+};
+
+::PotionResurrection.recoverResurrectionSequence <- function( _data, _reason )
+{
+    if (_data == null)
+    {
+        return;
+    }
+
+    local key = _data.Token.tostring();
+    if (key in ::PotionResurrection.ActiveResurrectionSequences)
+    {
+        ::PotionResurrection.ActiveResurrectionSequences.rawdelete(key);
+    }
+
+    if (_data.Actor == null)
+    {
+        return;
+    }
+
+    local actor = _data.Actor;
+    try
+    {
+        if (("PotionResurrectionAnimationToken" in actor.m) && actor.m.PotionResurrectionAnimationToken == _data.Token)
+        {
+            actor.setAlpha(255);
+            actor.m.IsRaising = false;
+            actor.m.IsAttackable = true;
+            actor.setRenderCallbackEnabled(false);
+            ::PotionResurrection.debugLog("Resurrection sequence recovered for " + actor.getName() + "; reason=" + _reason);
+        }
+    }
+    catch (error)
+    {
+        ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] Resurrection recovery failed: " + error);
+    }
+};
+
+::PotionResurrection.finishResurrectionSequence <- function( _data )
+{
+    try
+    {
+        if (!::PotionResurrection.isResurrectionSequenceCurrent(_data))
+        {
+            ::PotionResurrection.recoverResurrectionSequence(_data, "stale completion callback");
+            return;
+        }
+
+        local actor = _data.Actor;
+        actor.setAlpha(255);
+        actor.m.IsRaising = false;
+        actor.m.IsAttackable = true;
+        actor.setRenderCallbackEnabled(false);
+        local key = _data.Token.tostring();
+        if (key in ::PotionResurrection.ActiveResurrectionSequences)
+        {
+            ::PotionResurrection.ActiveResurrectionSequences.rawdelete(key);
+        }
+        ::PotionResurrection.debugLog("Resurrection sequence completed for " + actor.getName());
+    }
+    catch (error)
+    {
+        ::PotionResurrection.recoverResurrectionSequence(_data, "completion error: " + error);
+    }
+};
+
+::PotionResurrection.onResurrectionHiddenIntervalFinished <- function( _data )
+{
+    try
+    {
+        if (!::PotionResurrection.isResurrectionSequenceCurrent(_data))
+        {
+            ::PotionResurrection.recoverResurrectionSequence(_data, "stale rise callback");
+            return;
+        }
+
+        local actor = _data.Actor;
+        actor.setAlpha(0);
+        ::PotionResurrection.playResurrectionAnimation(actor, _data.Source);
+        ::PotionResurrection.debugLog("Resurrection rise started for " + actor.getName());
+        ::Time.scheduleEvent(::TimeUnit.Virtual, ::PotionResurrection.ResurrectionRiseDuration, ::PotionResurrection.finishResurrectionSequence, _data);
+    }
+    catch (error)
+    {
+        ::PotionResurrection.recoverResurrectionSequence(_data, "rise error: " + error);
+    }
+};
+
+::PotionResurrection.startResurrectionSequence <- function( _actor, _source = null )
+{
+    if (_actor == null || !_actor.isAlive() || !_actor.isPlacedOnMap() || ::Tactical.State == null)
+    {
+        return;
+    }
+
+    local tile = _actor.getTile();
+    if (tile == null)
+    {
+        return;
+    }
+
+    ::PotionResurrection.ResurrectionAnimationSerial++;
+    if (!("PotionResurrectionAnimationToken" in _actor.m))
+    {
+        _actor.m.PotionResurrectionAnimationToken <- 0;
+    }
+    _actor.m.PotionResurrectionAnimationToken = ::PotionResurrection.ResurrectionAnimationSerial;
+
+    local data = {
+        Actor = _actor,
+        Source = _source,
+        Token = _actor.m.PotionResurrectionAnimationToken,
+        TacticalState = ::Tactical.State,
+        TileX = tile.SquareCoords.X,
+        TileY = tile.SquareCoords.Y
+    };
+    ::PotionResurrection.ActiveResurrectionSequences[data.Token.tostring()] <- data;
+
+    try
+    {
+        _actor.m.IsAttackable = false;
+        _actor.fadeOut(::PotionResurrection.ResurrectionFadeDuration);
+        ::PotionResurrection.debugLog("Simulated death fade started for " + _actor.getName());
+        local delay = ::PotionResurrection.ResurrectionFadeDuration + ::PotionResurrection.ResurrectionHiddenDuration;
+        ::Time.scheduleEvent(::TimeUnit.Virtual, delay, ::PotionResurrection.onResurrectionHiddenIntervalFinished, data);
+        ::PotionResurrection.debugLog("Resurrection rise scheduled for " + _actor.getName() + "; hiddenDuration=" + ::PotionResurrection.ResurrectionHiddenDuration.tostring());
+    }
+    catch (error)
+    {
+        ::PotionResurrection.recoverResurrectionSequence(data, "start error: " + error);
+    }
+};
+
 ::PotionResurrection.restore <- function( _actor, _effect, _source = null )
 {
     local tierKey = _effect.getTier();
@@ -215,7 +372,7 @@
         _actor.setDirty(true);
 
         ::Tactical.EventLog.logEx(::Const.UI.getColorizedEntityName(_actor) + " is restored by a " + tier.Name + " Potion of Resurrection!");
-        ::PotionResurrection.playResurrectionAnimation(_actor, _source);
+        ::PotionResurrection.startResurrectionSequence(_actor, _source);
         ::Sound.play("sounds/combat/drink_01.wav", ::Const.Sound.Volume.Tactical, _actor.getPos());
         ::PotionResurrection.debugLog("Resurrection restoration succeeded for " + _actor.getName() + "; hitpoints=" + _actor.getHitpoints().tostring());
         return true;
@@ -242,5 +399,23 @@
         }
 
         return __original(_killer, _skill, _fatalityType, _silent);
+    }
+});
+
+::PotionResurrection.HooksMod.hook("scripts/states/tactical_state", function(q)
+{
+    q.onBattleEnded = @(__original) function()
+    {
+        local active = [];
+        foreach (data in ::PotionResurrection.ActiveResurrectionSequences)
+        {
+            active.push(data);
+        }
+        foreach (data in active)
+        {
+            ::PotionResurrection.recoverResurrectionSequence(data, "battle ended");
+        }
+
+        return __original();
     }
 });

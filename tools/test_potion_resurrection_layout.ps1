@@ -31,6 +31,7 @@ function Assert-NotContains([string] $RelativePath, [string[]] $Tokens) {
 
 Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'Hooks.register',
+    'Version = "1.0.4"',
     'mod_msu >= 1.9.0',
     'PriceScalingPct',
     'EnableDebugLogging',
@@ -89,6 +90,28 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     'riseFromGround(0.75)',
     'Resurrection animation failed',
     'Resurrection secondary visuals failed',
+    'startResurrectionSequence <- function',
+    'finishResurrectionSequence <- function',
+    'recoverResurrectionSequence <- function',
+    'ResurrectionFadeDuration <- 250',
+    'ResurrectionHiddenDuration <- 600',
+    'Time.scheduleEvent(::TimeUnit.Virtual',
+    '_actor.m.IsAttackable = false',
+    '_actor.fadeOut(::PotionResurrection.ResurrectionFadeDuration)',
+    'PotionResurrectionAnimationToken',
+    'ActiveResurrectionSequences',
+    'TacticalState = ::Tactical.State',
+    'TileX = tile.SquareCoords.X',
+    'TileY = tile.SquareCoords.Y',
+    'actor.setAlpha(255)',
+    'actor.m.IsAttackable = true',
+    'Simulated death fade started',
+    'Resurrection rise started',
+    'Resurrection sequence completed',
+    'Resurrection sequence recovered',
+    'scripts/states/tactical_state',
+    'q.onBattleEnded = @(__original)',
+    'recoverResurrectionSequence(data, "battle ended")',
     'scripts/entity/tactical/player',
     'q.kill = @(__original)',
     'return __original(_killer, _skill, _fatalityType, _silent)'
@@ -99,9 +122,9 @@ Assert-NotContains 'scripts/mods/potion_resurrection_service.nut' @(
 
 $serviceContent = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'scripts/mods/potion_resurrection_service.nut')
 $dirtyIndex = $serviceContent.IndexOf('_actor.setDirty(true);')
-$animationCallIndex = $serviceContent.IndexOf('::PotionResurrection.playResurrectionAnimation(_actor, _source);')
+$animationCallIndex = $serviceContent.IndexOf('::PotionResurrection.startResurrectionSequence(_actor, _source);')
 if ($dirtyIndex -lt 0 -or $animationCallIndex -le $dirtyIndex) {
-    throw 'Resurrection animation must run after restored actor state is refreshed.'
+    throw 'The staged resurrection sequence must run after restored actor state is refreshed.'
 }
 $animationFunctionIndex = $serviceContent.IndexOf('playResurrectionAnimation <- function')
 $riseIndex = $serviceContent.IndexOf('_actor.riseFromGround(0.75);', $animationFunctionIndex)
