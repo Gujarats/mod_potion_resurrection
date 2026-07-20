@@ -64,3 +64,41 @@
         _stash.sort();
     }
 });
+
+::PotionResurrection.HooksMod.hook("scripts/entity/world/settlements/buildings/marketplace_building", function(q)
+{
+    q.onAfterFillStash = @(__original) function( _stash )
+    {
+        __original(_stash);
+
+        if (!::PotionResurrection.conf("AddPotionsToAllMarketplaces"))
+        {
+            return;
+        }
+
+        ::PotionResurrection.addTierToAlchemist(
+            this,
+            _stash,
+            "normal",
+            "misc/resurrection_potion_normal_item"
+        );
+        ::PotionResurrection.addTierToAlchemist(
+            this,
+            _stash,
+            "medium",
+            "misc/resurrection_potion_medium_item"
+        );
+
+        if (::PotionResurrection.isHighTierSettlement(this.getSettlement()))
+        {
+            ::PotionResurrection.addTierToAlchemist(
+                this,
+                _stash,
+                "high",
+                "misc/resurrection_potion_high_item"
+            );
+        }
+
+        _stash.sort();
+    }
+});

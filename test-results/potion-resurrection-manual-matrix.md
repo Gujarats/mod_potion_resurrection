@@ -21,5 +21,6 @@ Automated static checks run in this repository. The following tests require Batt
 | MSU settings | Change every setting, reload, and verify persistence | PENDING | Requires game runtime |
 | Dynamic pricing | Test empty, one-member, uniform, and mixed-level rosters | PENDING | Requires game runtime |
 | Market distribution | Refresh size-1, size-2, and size-3 alchemists with deterministic settings | PENDING | Requires game runtime |
+| Marketplace option | Refresh northern and southern marketplaces with the option disabled, then enabled; verify tier chances, stock, and High-tier size restriction | PENDING | Requires game runtime |
 | Item spawner compatibility | Search, spawn, consume, and trigger all tiers | PENDING | Requires game runtime |
 | Legends compatibility | Run consumption, resurrection, and market smoke tests with Legends | PENDING | Requires game runtime |

@@ -1,6 +1,6 @@
 ::PotionResurrection <- {
     ID = "mod_potion_resurrection",
-    Version = "1.0.5",
+    Version = "1.0.6",
     Name = "Potion of Resurrection",
     Tiers = {
         normal = {
@@ -53,6 +53,7 @@
     local general = ::PotionResurrection.Mod.ModSettings.addPage("General");
     ::PotionResurrection.Mod.Debug.disable(); // TODO: Replace with a user setting when configurable logging returns.
     general.addRangeSetting("PriceScalingPct", 5, 0, 100, 1, "Price Scaling per Level (%)", "Applied for each averaged boundary level of the active roster.");
+    general.addBooleanSetting("AddPotionsToAllMarketplaces", false, "Add Potions to All Marketplaces", "When enabled, add resurrection potions to northern and southern marketplace inventories using the configured tier chances and stock values.");
     general.addBooleanSetting("RestrictHighToLargeSettlements", true, "Restrict High Potions", "Only allow High potions in settlements of size 3 or larger.");
 
     local normal = ::PotionResurrection.Mod.ModSettings.addPage("Normal");

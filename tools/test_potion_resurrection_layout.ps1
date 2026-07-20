@@ -31,9 +31,10 @@ function Assert-NotContains([string] $RelativePath, [string[]] $Tokens) {
 
 Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'Hooks.register',
-    'Version = "1.0.4"',
+    'Version = "1.0.6"',
     'mod_msu >= 1.9.0',
     'PriceScalingPct',
+    'AddPotionsToAllMarketplaces',
     'RestrictHighToLargeSettlements',
     'NormalHealthPct',
     'MediumHealthPct',
@@ -170,6 +171,16 @@ Assert-Contains 'scripts/mods/potion_resurrection_market.nut' @(
     'misc/resurrection_potion_medium_item',
     'misc/resurrection_potion_high_item',
     '_stash.sort()'
+)
+
+Assert-Contains 'scripts/mods/potion_resurrection_market.nut' @(
+    'scripts/entity/world/settlements/buildings/marketplace_building',
+    '::PotionResurrection.conf("AddPotionsToAllMarketplaces")',
+    'HooksMod.hook("scripts/entity/world/settlements/buildings/marketplace_building"',
+    'misc/resurrection_potion_normal_item',
+    'misc/resurrection_potion_medium_item',
+    'misc/resurrection_potion_high_item',
+    'isHighTierSettlement(this.getSettlement())'
 )
 
 Assert-Contains 'compat/mod_spawn_item_addon_potion_resurrection/scripts/!mods_preload/register_potion_resurrection_for_item_spawner.nut' @(
