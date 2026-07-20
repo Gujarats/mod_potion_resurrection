@@ -19,6 +19,16 @@ function Assert-Contains([string] $RelativePath, [string[]] $Tokens) {
     }
 }
 
+function Assert-NotContains([string] $RelativePath, [string[]] $Tokens) {
+    Assert-FileExists $RelativePath
+    $content = Get-Content -Raw -LiteralPath (Join-Path $projectRoot $RelativePath)
+    foreach ($token in $Tokens) {
+        if ($content.Contains($token)) {
+            throw "Unexpected token '$token' in $RelativePath"
+        }
+    }
+}
+
 Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'Hooks.register',
     'mod_msu >= 1.9.0',
@@ -103,6 +113,10 @@ Assert-Contains 'compat/mod_spawn_item_addon_potion_resurrection/scripts/!mods_p
     'misc.resurrection_potion_high',
     'ItemFilter.All',
     'ItemFilter.Usable'
+)
+Assert-NotContains 'compat/mod_spawn_item_addon_potion_resurrection/scripts/!mods_preload/register_potion_resurrection_for_item_spawner.nut' @(
+    'function( _reset = false )',
+    'originalQueryItemUIData(_reset)'
 )
 
 $assetPaths = @(

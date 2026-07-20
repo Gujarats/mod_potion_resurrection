@@ -15,9 +15,9 @@
 ], function()
 {
     local originalQueryItemUIData = ::ModItemSpawner.queryItemUIData;
-    ::ModItemSpawner.queryItemUIData = function( _reset = false )
+    ::ModItemSpawner.queryItemUIData = function()
     {
-        originalQueryItemUIData(_reset);
+        originalQueryItemUIData();
 
         local definitions = [
             {
