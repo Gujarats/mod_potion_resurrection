@@ -88,16 +88,27 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     'getCamera().quake',
     'riseFromGround(0.75)',
     'Resurrection animation failed',
+    'Resurrection secondary visuals failed',
     'scripts/entity/tactical/player',
     'q.kill = @(__original)',
     'return __original(_killer, _skill, _fatalityType, _silent)'
 )
+Assert-NotContains 'scripts/mods/potion_resurrection_service.nut' @(
+    '_actor.createVec'
+)
 
 $serviceContent = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'scripts/mods/potion_resurrection_service.nut')
 $dirtyIndex = $serviceContent.IndexOf('_actor.setDirty(true);')
-$animationCallIndex = $serviceContent.IndexOf('::PotionResurrection.playResurrectionAnimation(_actor);')
+$animationCallIndex = $serviceContent.IndexOf('::PotionResurrection.playResurrectionAnimation(_actor, _source);')
 if ($dirtyIndex -lt 0 -or $animationCallIndex -le $dirtyIndex) {
     throw 'Resurrection animation must run after restored actor state is refreshed.'
+}
+$animationFunctionIndex = $serviceContent.IndexOf('playResurrectionAnimation <- function')
+$riseIndex = $serviceContent.IndexOf('_actor.riseFromGround(0.75);', $animationFunctionIndex)
+$particlesIndex = $serviceContent.IndexOf('RaiseUndeadParticles', $animationFunctionIndex)
+$quakeIndex = $serviceContent.IndexOf('getCamera().quake', $animationFunctionIndex)
+if ($riseIndex -lt 0 -or $particlesIndex -le $riseIndex -or $quakeIndex -le $riseIndex) {
+    throw 'Native rise must start before optional particles and camera shake.'
 }
 
 Assert-Contains 'scripts/items/misc/resurrection_potion_item.nut' @(

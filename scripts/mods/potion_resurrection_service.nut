@@ -126,10 +126,21 @@
     item.setCondition(::PotionResurrection.clamp(condition, 0, item.getConditionMax()));
 };
 
-::PotionResurrection.playResurrectionAnimation <- function( _actor )
+::PotionResurrection.playResurrectionAnimation <- function( _actor, _source = null )
 {
     if (_actor == null || !_actor.isAlive() || !_actor.isPlacedOnMap())
     {
+        return;
+    }
+
+    try
+    {
+        _actor.riseFromGround(0.75);
+        ::PotionResurrection.debugLog("Native resurrection animation started for " + _actor.getName());
+    }
+    catch (error)
+    {
+        ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] Resurrection animation failed for " + _actor.getName() + ": " + error);
         return;
     }
 
@@ -169,17 +180,18 @@
             ::Const.Tactical.Settings.SkillIconFadeOutDuration,
             ::Const.Tactical.Settings.SkillIconMovement
         );
-        ::Tactical.getCamera().quake(_actor.createVec(0, -1.0), 4.0, 0.25, 0.3);
-        _actor.riseFromGround(0.75);
-        ::PotionResurrection.debugLog("Native resurrection animation started for " + _actor.getName());
+        if (_source != null && _source.isAlive())
+        {
+            ::Tactical.getCamera().quake(_source, _actor, 4.0, 0.25, 0.3);
+        }
     }
     catch (error)
     {
-        ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] Resurrection animation failed for " + _actor.getName() + ": " + error);
+        ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] Resurrection secondary visuals failed for " + _actor.getName() + ": " + error);
     }
 };
 
-::PotionResurrection.restore <- function( _actor, _effect )
+::PotionResurrection.restore <- function( _actor, _effect, _source = null )
 {
     local tierKey = _effect.getTier();
     local tier = ::PotionResurrection.Tiers[tierKey];
@@ -203,7 +215,7 @@
         _actor.setDirty(true);
 
         ::Tactical.EventLog.logEx(::Const.UI.getColorizedEntityName(_actor) + " is restored by a " + tier.Name + " Potion of Resurrection!");
-        ::PotionResurrection.playResurrectionAnimation(_actor);
+        ::PotionResurrection.playResurrectionAnimation(_actor, _source);
         ::Sound.play("sounds/combat/drink_01.wav", ::Const.Sound.Volume.Tactical, _actor.getPos());
         ::PotionResurrection.debugLog("Resurrection restoration succeeded for " + _actor.getName() + "; hitpoints=" + _actor.getHitpoints().tostring());
         return true;
@@ -224,7 +236,7 @@
         ::PotionResurrection.debugLog("player.kill intercepted for " + this.getName() + "; effectPresent=" + (effect != null).tostring() + "; fatalityType=" + _fatalityType.tostring());
         if (effect != null
             && ::PotionResurrection.canTrigger(this, _killer, _skill, _fatalityType)
-            && ::PotionResurrection.restore(this, effect))
+            && ::PotionResurrection.restore(this, effect, _killer))
         {
             return;
         }
