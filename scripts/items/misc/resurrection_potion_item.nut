@@ -76,6 +76,7 @@ this.resurrection_potion_item <- this.inherit("scripts/items/item", {
         effect.setTier(this.m.Tier);
         _actor.getSkills().removeByID("effects.resurrection_potion");
         _actor.getSkills().add(effect);
+        ::PotionResurrection.debugLog("Potion consumed by " + _actor.getName() + "; tier=" + this.m.Tier + "; effect applied");
         this.Sound.play("sounds/combat/drink_0" + this.Math.rand(1, 3) + ".wav", this.Const.Sound.Volume.Inventory);
         this.Const.Tactical.Common.checkDrugEffect(_actor);
         return true;

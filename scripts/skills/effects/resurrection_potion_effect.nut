@@ -55,6 +55,12 @@ this.resurrection_potion_effect <- this.inherit("scripts/skills/skill", {
         ];
     }
 
+    function onCombatStarted()
+    {
+        local actor = this.getContainer().getActor();
+        ::PotionResurrection.debugLog("Effect active at combat start for " + actor.getName() + "; tier=" + this.m.Tier);
+    }
+
     function onSerialize( _out )
     {
         this.skill.onSerialize(_out);

@@ -33,6 +33,7 @@ Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'Hooks.register',
     'mod_msu >= 1.9.0',
     'PriceScalingPct',
+    'EnableDebugLogging',
     'RestrictHighToLargeSettlements',
     'NormalHealthPct',
     'MediumHealthPct',
@@ -50,7 +51,9 @@ Assert-Contains 'scripts/skills/effects/resurrection_potion_effect.nut' @(
     'function isTriggering',
     'function setTriggering',
     'writeString',
-    'readString'
+    'readString',
+    'function onCombatStarted',
+    'Effect active at combat start'
 )
 
 Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
@@ -64,6 +67,11 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     'restoreArmorSlot',
     'getBoundaryAverageLevel',
     'getScaledPrice',
+    'debugLog',
+    'player.kill intercepted',
+    'Resurrection eligibility rejected',
+    'Resurrection restoration started',
+    'Resurrection restoration succeeded',
     'scripts/entity/tactical/player',
     'q.kill = @(__original)',
     'return __original(_killer, _skill, _fatalityType, _silent)'
@@ -78,7 +86,8 @@ Assert-Contains 'scripts/items/misc/resurrection_potion_item.nut' @(
     'setTier',
     'checkDrugEffect',
     'sounds/bottle_01.wav',
-    'sounds/combat/drink_0'
+    'sounds/combat/drink_0',
+    'Potion consumed'
 )
 
 $itemContracts = @{

@@ -14,6 +14,8 @@ Default restoration is 50% health/25% armor for Normal, 80%/50% for Medium, and 
 
 Normal, Medium, and High default to 100%/20%/5% availability and stock 2/1/1. High is restricted to size-3 settlements by default. All balance values are configurable through MSU.
 
+`Enable Debug Logging` is enabled by default in the MSU General page. Diagnostic lines begin with `[PotionResurrection]` and report consumption, effect presence at combat start, lethal interception, eligibility decisions, and restoration results.
+
 Install the contents of the main release archive into the Battle Brothers `data` directory. Do not remove the mod from a save while a brother carries its resurrection effect.
 
 ## Release archives

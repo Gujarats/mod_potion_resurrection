@@ -51,6 +51,7 @@
     };
 
     local general = ::PotionResurrection.Mod.ModSettings.addPage("General");
+    general.addBooleanSetting("EnableDebugLogging", true, "Enable Debug Logging", "Write potion consumption, battle activation, death interception, eligibility, and restoration details to the Battle Brothers log.");
     general.addRangeSetting("PriceScalingPct", 5, 0, 100, 1, "Price Scaling per Level (%)", "Applied for each averaged boundary level of the active roster.");
     general.addBooleanSetting("RestrictHighToLargeSettlements", true, "Restrict High Potions", "Only allow High potions in settlements of size 3 or larger.");
 
@@ -77,4 +78,5 @@
 
     ::include("mods/potion_resurrection_service");
     ::include("mods/potion_resurrection_market");
+    ::PotionResurrection.debugLog("Mod initialized; player.kill hook and market hook registered");
 });

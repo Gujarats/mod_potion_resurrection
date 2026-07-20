@@ -3,6 +3,14 @@
     return ::Math.max(_minimum, ::Math.min(_maximum, _value));
 };
 
+::PotionResurrection.debugLog <- function( _message )
+{
+    if (::PotionResurrection.conf("EnableDebugLogging"))
+    {
+        ::logInfo("[PotionResurrection] " + _message);
+    }
+};
+
 ::PotionResurrection.getBoundaryAverageLevel <- function()
 {
     if (!("World" in getroottable()) || ::World.getPlayerRoster() == null)
@@ -38,28 +46,75 @@
 
 ::PotionResurrection.canTrigger <- function( _actor, _killer, _skill, _fatalityType )
 {
-    if (_actor == null || !_actor.isPlayerControlled() || !_actor.isAlive() || !_actor.isPlacedOnMap())
+    if (_actor == null)
     {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected: actor is null");
         return false;
     }
 
-    if (::Tactical.State == null || ::Tactical.State.isScenarioMode() || ::Tactical.State.isAutoRetreat())
+    if (!_actor.isPlayerControlled())
     {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": actor is not player controlled");
+        return false;
+    }
+
+    if (!_actor.isAlive())
+    {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": actor is already marked dead");
+        return false;
+    }
+
+    if (!_actor.isPlacedOnMap())
+    {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": actor is not placed on the tactical map");
+        return false;
+    }
+
+    if (::Tactical.State == null)
+    {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": tactical state is null");
+        return false;
+    }
+
+    if (::Tactical.State.isScenarioMode())
+    {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": scenario mode");
+        return false;
+    }
+
+    if (::Tactical.State.isAutoRetreat())
+    {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": auto retreat");
         return false;
     }
 
     if (_fatalityType == ::Const.FatalityType.Kraken || _fatalityType == ::Const.FatalityType.Devoured)
     {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": excluded fatality type " + _fatalityType.tostring());
         return false;
     }
 
     if (_killer == null && _skill == null)
     {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": killer and skill are both null (scripted/cleanup death)");
         return false;
     }
 
     local effect = _actor.getSkills().getSkillByID("effects.resurrection_potion");
-    return effect != null && !effect.isTriggering();
+    if (effect == null)
+    {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": effect not found");
+        return false;
+    }
+
+    if (effect.isTriggering())
+    {
+        ::PotionResurrection.debugLog("Resurrection eligibility rejected for " + _actor.getName() + ": effect is already triggering");
+        return false;
+    }
+
+    ::PotionResurrection.debugLog("Resurrection eligibility accepted for " + _actor.getName() + "; fatality type=" + _fatalityType.tostring());
+    return true;
 };
 
 ::PotionResurrection.restoreArmorSlot <- function( _actor, _slot, _pct )
@@ -79,6 +134,7 @@
     local tierKey = _effect.getTier();
     local tier = ::PotionResurrection.Tiers[tierKey];
     _effect.setTriggering(true);
+    ::PotionResurrection.debugLog("Resurrection restoration started for " + _actor.getName() + "; tier=" + tierKey);
 
     try
     {
@@ -98,6 +154,7 @@
 
         ::Tactical.EventLog.logEx(::Const.UI.getColorizedEntityName(_actor) + " is restored by a " + tier.Name + " Potion of Resurrection!");
         ::Sound.play("sounds/combat/drink_01.wav", ::Const.Sound.Volume.Tactical, _actor.getPos());
+        ::PotionResurrection.debugLog("Resurrection restoration succeeded for " + _actor.getName() + "; hitpoints=" + _actor.getHitpoints().tostring());
         return true;
     }
     catch (error)
@@ -113,6 +170,7 @@
     q.kill = @(__original) function(_killer = null, _skill = null, _fatalityType = ::Const.FatalityType.None, _silent = false)
     {
         local effect = this.getSkills().getSkillByID("effects.resurrection_potion");
+        ::PotionResurrection.debugLog("player.kill intercepted for " + this.getName() + "; effectPresent=" + (effect != null).tostring() + "; fatalityType=" + _fatalityType.tostring());
         if (effect != null
             && ::PotionResurrection.canTrigger(this, _killer, _skill, _fatalityType)
             && ::PotionResurrection.restore(this, effect))
