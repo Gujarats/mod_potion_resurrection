@@ -1,6 +1,6 @@
 ::PotionResurrection <- {
     ID = "mod_potion_resurrection",
-    Version = "1.0.0",
+    Version = "1.0.1",
     Name = "Potion of Resurrection",
     Tiers = {
         normal = {
@@ -51,7 +51,12 @@
     };
 
     local general = ::PotionResurrection.Mod.ModSettings.addPage("General");
-    general.addBooleanSetting("EnableDebugLogging", true, "Enable Debug Logging", "Write potion consumption, battle activation, death interception, eligibility, and restoration details to the Battle Brothers log.");
+    local debugLogSetting = general.addBooleanSetting("EnableDebugLogging", true, "Enable Debug Logging", "Write potion consumption, battle activation, death interception, eligibility, and restoration details to the Battle Brothers log.");
+    debugLogSetting.addCallback(function(_data = null)
+    {
+        ::PotionResurrection.Mod.Debug.setFlag("default", this.getValue());
+    });
+    ::PotionResurrection.Mod.Debug.setFlag("default", debugLogSetting.getValue());
     general.addRangeSetting("PriceScalingPct", 5, 0, 100, 1, "Price Scaling per Level (%)", "Applied for each averaged boundary level of the active roster.");
     general.addBooleanSetting("RestrictHighToLargeSettlements", true, "Restrict High Potions", "Only allow High potions in settlements of size 3 or larger.");
 
@@ -76,7 +81,7 @@
     high.addRangeSetting("HighSpawnChance", 5, 0, 100, 1, "Spawn Chance (%)", "Chance to add this tier during an alchemist refresh.");
     high.addRangeSetting("HighStock", 1, 0, 10, 1, "Stock", "Copies added after a successful availability roll.");
 
-    ::include("mods/potion_resurrection_service");
-    ::include("mods/potion_resurrection_market");
+    ::include("scripts/mods/potion_resurrection_service");
+    ::include("scripts/mods/potion_resurrection_market");
     ::PotionResurrection.debugLog("Mod initialized; player.kill hook and market hook registered");
 });

@@ -40,7 +40,15 @@ Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'HighHealthPct',
     'NormalStock',
     'MediumStock',
-    'HighStock'
+    'HighStock',
+    '::include("scripts/mods/potion_resurrection_service")',
+    '::include("scripts/mods/potion_resurrection_market")',
+    'Mod.Debug.setFlag("default"',
+    'debugLogSetting.addCallback'
+)
+Assert-NotContains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
+    '::include("mods/potion_resurrection_service")',
+    '::include("mods/potion_resurrection_market")'
 )
 
 Assert-Contains 'scripts/skills/effects/resurrection_potion_effect.nut' @(
@@ -68,6 +76,7 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     'getBoundaryAverageLevel',
     'getScaledPrice',
     'debugLog',
+    'Mod.Debug.printLog',
     'player.kill intercepted',
     'Resurrection eligibility rejected',
     'Resurrection restoration started',

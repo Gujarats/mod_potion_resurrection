@@ -5,10 +5,7 @@
 
 ::PotionResurrection.debugLog <- function( _message )
 {
-    if (::PotionResurrection.conf("EnableDebugLogging"))
-    {
-        ::logInfo("[PotionResurrection] " + _message);
-    }
+    ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] " + _message);
 };
 
 ::PotionResurrection.getBoundaryAverageLevel <- function()
