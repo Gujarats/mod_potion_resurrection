@@ -10,6 +10,7 @@ Automated static checks run in this repository. The following tests require Batt
 | Restoration | Trigger Normal, Medium, and High with body/head armor | PENDING | Requires game runtime |
 | Resurrection animation | Confirm particles, overhead icon, camera shake, native rise, and temporary non-attackable state | PENDING | Requires game runtime |
 | Simulated death sequence | Confirm 250 ms fade-out, 600 ms hidden interval, native rise, and restored visibility/targeting | PENDING | Requires game runtime |
+| Resurrection morale | Trigger resurrection while the brother is Fleeing; confirm morale becomes Steady and normal turns resume after the rise | PENDING | Requires game runtime |
 | Sequence recovery | End a battle during the delay and verify no brother remains invisible or untargetable; review lifecycle logs | PENDING | Requires game runtime |
 | Armor edge cases | Trigger with empty and destroyed armor slots | PENDING | Requires game runtime |
 | Fatalities | Trigger on ordinary, DOT, decapitation, and disembowelment deaths | PENDING | Requires game runtime |

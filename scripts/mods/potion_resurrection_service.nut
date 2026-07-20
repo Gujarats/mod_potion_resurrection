@@ -370,6 +370,7 @@
         _actor.getSkills().removeByID("effects.resurrection_potion");
         _actor.getSkills().update();
         _actor.setDirty(true);
+        _actor.setMoraleState(::Const.MoraleState.Steady);
 
         ::Tactical.EventLog.logEx(::Const.UI.getColorizedEntityName(_actor) + " is restored by a " + tier.Name + " Potion of Resurrection!");
         ::PotionResurrection.startResurrectionSequence(_actor, _source);

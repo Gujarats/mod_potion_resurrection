@@ -75,6 +75,7 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     '_killer == null && _skill == null',
     'isPlacedOnMap()',
     'restoreArmorSlot',
+    '_actor.setMoraleState(::Const.MoraleState.Steady);',
     'getBoundaryAverageLevel',
     'getScaledPrice',
     'debugLog',
@@ -123,9 +124,10 @@ Assert-NotContains 'scripts/mods/potion_resurrection_service.nut' @(
 
 $serviceContent = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'scripts/mods/potion_resurrection_service.nut')
 $dirtyIndex = $serviceContent.IndexOf('_actor.setDirty(true);')
+$moraleResetIndex = $serviceContent.IndexOf('_actor.setMoraleState(::Const.MoraleState.Steady);')
 $animationCallIndex = $serviceContent.IndexOf('::PotionResurrection.startResurrectionSequence(_actor, _source);')
-if ($dirtyIndex -lt 0 -or $animationCallIndex -le $dirtyIndex) {
-    throw 'The staged resurrection sequence must run after restored actor state is refreshed.'
+if ($dirtyIndex -lt 0 -or $moraleResetIndex -le $dirtyIndex -or $animationCallIndex -le $moraleResetIndex) {
+    throw 'Morale must reset after restored actor state is refreshed and before the staged resurrection sequence.'
 }
 $animationFunctionIndex = $serviceContent.IndexOf('playResurrectionAnimation <- function')
 $riseIndex = $serviceContent.IndexOf('_actor.riseFromGround(0.75);', $animationFunctionIndex)
