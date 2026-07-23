@@ -22,7 +22,7 @@
     ::PotionResurrection.debugLog("Adding " + _tierKey + " tier to alchemist: chance=" + chance + ", stock=" + stock);
     if (chance <= 0 || stock <= 0 || ::Math.rand(1, 100) > chance)
     {
-        ::PotionResurrection.debugLog("Chance for" + _tierKey + " tier not added to alchemist due to chance or stock.");
+        ::PotionResurrection.debugLog("Chance for " + _tierKey + " tier not added to alchemist due to chance or stock.");
         return;
     }
 
