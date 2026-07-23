@@ -1,2 +1,4 @@
 /.build-potion-resurrection/
 /release/*.zip
+dist
+*.json
