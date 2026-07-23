@@ -27,9 +27,9 @@ The main Potion of Resurrection archive does not require Item Spawner.
 
 | Tier | Health restored | Armor restored | Base price | Default availability | Default stock |
 |---|---:|---:|---:|---:|---:|
-| Normal | 50% | 25% | 750 crowns | 100% | 2 |
-| Medium | 80% | 50% | 750 crowns | 20% | 1 |
-| High | 100% | 100% | 750 crowns | 5% | 1 |
+| Normal | 50% | 25% | 200 crowns | 100% | 2 |
+| Medium | 80% | 50% | 600 crowns | 20% | 1 |
+| High | 100% | 100% | 1,800 crowns | 5% | 1 |
 
 Prices scale from the averaged lowest and highest active roster levels, at 5% per averaged level by default. High potions are restricted to size-3 settlements by default.
 
