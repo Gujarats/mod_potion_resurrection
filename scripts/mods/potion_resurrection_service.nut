@@ -240,8 +240,10 @@
     {
         if (("PotionResurrectionAnimationToken" in actor.m) && actor.m.PotionResurrectionAnimationToken == _data.Token)
         {
+            actor.setPos(actor.createVec(0, 0));
             actor.setAlpha(255);
             actor.m.IsRaising = false;
+            actor.m.IsSinking = false;
             actor.m.IsAttackable = true;
             actor.setRenderCallbackEnabled(false);
             ::PotionResurrection.debugLog("Resurrection sequence recovered for " + actor.getName() + "; reason=" + _reason);
@@ -264,8 +266,10 @@
         }
 
         local actor = _data.Actor;
+        actor.setPos(actor.createVec(0, 0));
         actor.setAlpha(255);
         actor.m.IsRaising = false;
+        actor.m.IsSinking = false;
         actor.m.IsAttackable = true;
         actor.setRenderCallbackEnabled(false);
         local key = _data.Token.tostring();
