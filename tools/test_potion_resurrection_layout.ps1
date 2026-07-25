@@ -34,7 +34,7 @@ Assert-Contains 'scripts/!mods_preload/mod_potion_resurrection.nut' @(
     'Version = "1.0.6"',
     'mod_msu >= 1.9.0',
     'PriceScalingPct',
-    'general.addRangeSetting("PriceScalingPct", 5, 0, 100, 1, "Price Scaling per Level (%)"',
+    'general.addRangeSetting("PriceScalingPct", 0, 0, 100, 1, "Price Scaling per Level (%)"',
     'AddPotionsToAllMarketplaces',
     'RestrictHighToLargeSettlements',
     'NormalHealthPct',
@@ -118,6 +118,7 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     'TileX = tile.SquareCoords.X',
     'TileY = tile.SquareCoords.Y',
     'actor.setAlpha(255)',
+    'actor.setPos(actor.createVec(0, 0))',
     'actor.m.IsAttackable = true',
     'Simulated death fade started',
     'Resurrection rise started',
@@ -130,10 +131,6 @@ Assert-Contains 'scripts/mods/potion_resurrection_service.nut' @(
     'q.kill = @(__original)',
     'return __original(_killer, _skill, _fatalityType, _silent)'
 )
-Assert-NotContains 'scripts/mods/potion_resurrection_service.nut' @(
-    '_actor.createVec'
-)
-
 $serviceContent = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'scripts/mods/potion_resurrection_service.nut')
 $dirtyIndex = $serviceContent.IndexOf('_actor.setDirty(true);')
 $moraleResetIndex = $serviceContent.IndexOf('_actor.setMoraleState(::Const.MoraleState.Steady);')
