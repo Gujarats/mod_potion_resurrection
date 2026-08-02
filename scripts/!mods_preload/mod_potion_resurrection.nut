@@ -63,7 +63,7 @@
     };
 
     local general = ::PotionResurrection.Mod.ModSettings.addPage("General");
-    local debugLogging = general.addBooleanSetting("DebugLogging", true, "Debug Logging", "Write Potion of Resurrection debug lines to log.html.");
+    local debugLogging = general.addBooleanSetting("DebugLogging", false, "Debug Logging", "Write Potion of Resurrection debug lines to log.html.");
     debugLogging.addCallback(function( _data = null )
     {
         ::PotionResurrection.configureDebugLogging();
