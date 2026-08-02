@@ -2,3 +2,4 @@
 /release/*.zip
 dist
 *.json
+build

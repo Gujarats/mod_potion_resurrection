@@ -30,14 +30,15 @@
     }
 };
 
+::include("scripts/mods/potion_resurrection/compatibility/legends_market_patch");
+
 ::PotionResurrection.HooksMod <- ::Hooks.register(
     ::PotionResurrection.ID,
     ::PotionResurrection.Version,
     ::PotionResurrection.Name
 );
 ::PotionResurrection.HooksMod.require("mod_msu >= 1.9.0");
-
-::PotionResurrection.HooksMod.queue(">mod_msu", function()
+::PotionResurrection.HooksMod.queue(">mod_msu", ">mod_legends", function()
 {
     ::PotionResurrection.Mod <- ::MSU.Class.Mod(
         ::PotionResurrection.ID,
@@ -50,8 +51,24 @@
         return ::PotionResurrection.Mod.ModSettings.getSetting(_key).getValue();
     };
 
+    ::PotionResurrection.configureDebugLogging <- function()
+    {
+        local enabled = ::PotionResurrection.Mod.ModSettings.getSetting("DebugLogging").getValue();
+        ::PotionResurrection.Mod.Debug.setFlag("default", enabled);
+
+        if (enabled)
+        {
+            ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] debug logging enabled");
+        }
+    };
+
     local general = ::PotionResurrection.Mod.ModSettings.addPage("General");
-    ::PotionResurrection.Mod.Debug.disable(); // TODO: Replace with a user setting when configurable logging returns.
+    local debugLogging = general.addBooleanSetting("DebugLogging", true, "Debug Logging", "Write Potion of Resurrection debug lines to log.html.");
+    debugLogging.addCallback(function( _data = null )
+    {
+        ::PotionResurrection.configureDebugLogging();
+    });
+    ::PotionResurrection.configureDebugLogging();
     general.addRangeSetting("PriceScalingPct", 0, 0, 100, 1, "Price Scaling per Level (%)", "Applied for each averaged boundary level of the active roster.");
     general.addBooleanSetting("AddPotionsToAllMarketplaces", true, "Add Potions to All Marketplaces", "When enabled, add resurrection potions to northern and southern marketplace inventories using the configured tier chances and stock values.");
     general.addBooleanSetting("RestrictHighToLargeSettlements", true, "Restrict High Potions", "Only allow High potions in settlements of size 3 or larger.");
@@ -79,5 +96,15 @@
 
     ::include("scripts/mods/potion_resurrection_service");
     ::include("scripts/mods/potion_resurrection_market");
+
+    if (::Hooks.hasMod("mod_legends"))
+    {
+        ::PotionResurrection.Compatibility.Legends.registerHooks(::PotionResurrection.HooksMod);
+    }
+    else
+    {
+        ::PotionResurrection.registerVanillaMarketHooks();
+    }
+
     ::PotionResurrection.debugLog("Mod initialized; player.kill hook and market hook registered");
 });

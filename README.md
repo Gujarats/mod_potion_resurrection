@@ -45,7 +45,11 @@ Do not remove the main mod from a save while a brother has a resurrection effect
 
 All gameplay and balance values are configurable through the MSU settings pages: health restoration, armor restoration, base price, level scaling, availability, stock, and High-potion settlement restriction.
 
-The diagnostic `[PotionResurrection]` log code is retained for troubleshooting, but logging is currently hard-disabled. It will be exposed as a user setting in a future update.
+`Debug Logging` is also available on the MSU General page and defaults to enabled. `[PotionResurrection]` diagnostic output is written to `C:\Users\gujar\Documents\Battle Brothers\log.html`.
+
+## Legends Compatibility
+
+Legends is supported. Potion of Resurrection adds stock after Legends finishes filling marketplace and alchemist stashes. Existing shop stashes receive the new items on their next stock refresh.
 
 ## Known visual limitation
 
