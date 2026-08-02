@@ -35,74 +35,57 @@
     ::PotionResurrection.debugLog("Successfully added " + _tierKey + " tier to alchemist.");
 };
 
-::PotionResurrection.HooksMod.hook("scripts/entity/world/settlements/buildings/alchemist_building", function(q)
+::PotionResurrection.addMarketStock <- function( _building, _stash, _isAlchemist )
 {
-    q.onAfterFillStash = @(__original) function( _stash )
+    if (!_isAlchemist && !::PotionResurrection.conf("AddPotionsToAllMarketplaces"))
     {
-        __original(_stash);
-
-        ::PotionResurrection.addTierToAlchemist(
-            this,
-            _stash,
-            "normal",
-            "misc/resurrection_potion_normal_item"
-        );
-        ::PotionResurrection.addTierToAlchemist(
-            this,
-            _stash,
-            "medium",
-            "misc/resurrection_potion_medium_item"
-        );
-
-        if (::PotionResurrection.isHighTierSettlement(this.getSettlement()))
-        {
-            ::PotionResurrection.addTierToAlchemist(
-                this,
-                _stash,
-                "high",
-                "misc/resurrection_potion_high_item"
-            );
-        }
-
-        _stash.sort();
+        ::PotionResurrection.debugLog("AddPotionsToAllMarketplaces is disabled, skipping marketplace potion addition.");
+        return;
     }
-});
 
-::PotionResurrection.HooksMod.hook("scripts/entity/world/settlements/buildings/marketplace_building", function(q)
+    ::PotionResurrection.addTierToAlchemist(
+        _building,
+        _stash,
+        "normal",
+        "misc/resurrection_potion_normal_item"
+    );
+    ::PotionResurrection.addTierToAlchemist(
+        _building,
+        _stash,
+        "medium",
+        "misc/resurrection_potion_medium_item"
+    );
+
+    if (::PotionResurrection.isHighTierSettlement(_building.getSettlement()))
+    {
+        ::PotionResurrection.addTierToAlchemist(
+            _building,
+            _stash,
+            "high",
+            "misc/resurrection_potion_high_item"
+        );
+    }
+
+    _stash.sort();
+};
+
+::PotionResurrection.registerVanillaMarketHooks <- function()
 {
-    q.onAfterFillStash = @(__original) function( _stash )
+    ::PotionResurrection.HooksMod.hook("scripts/entity/world/settlements/buildings/alchemist_building", function(q)
     {
-        __original(_stash);
-
-        if (!::PotionResurrection.conf("AddPotionsToAllMarketplaces"))
+        q.onAfterFillStash = @(__original) function( _stash )
         {
-            ::PotionResurrection.debugLog("AddPotionsToAllMarketplaces is disabled, skipping marketplace potion addition.");
-            return;
-        }
+            __original(_stash);
+            ::PotionResurrection.addMarketStock(this, _stash, true);
+        };
+    });
 
-        ::PotionResurrection.addTierToAlchemist(
-            this,
-            _stash,
-            "normal",
-            "misc/resurrection_potion_normal_item"
-        );
-        ::PotionResurrection.addTierToAlchemist(
-            this,
-            _stash,
-            "medium",
-            "misc/resurrection_potion_medium_item"
-        );
-
-        if (::PotionResurrection.isHighTierSettlement(this.getSettlement()))
+    ::PotionResurrection.HooksMod.hook("scripts/entity/world/settlements/buildings/marketplace_building", function(q)
+    {
+        q.onAfterFillStash = @(__original) function( _stash )
         {
-            ::PotionResurrection.addTierToAlchemist(
-                this,
-                _stash,
-                "high",
-                "misc/resurrection_potion_high_item"
-            );
-        }
-
-        _stash.sort();
-    }
-});
+            __original(_stash);
+            ::PotionResurrection.addMarketStock(this, _stash, false);
+        };
+    });
+};
