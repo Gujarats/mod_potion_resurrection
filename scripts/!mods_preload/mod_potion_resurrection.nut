@@ -1,6 +1,6 @@
 ::PotionResurrection <- {
     ID = "mod_potion_resurrection",
-    Version = "1.0.7",
+    Version = "1.1.0",
     Name = "Potion of Resurrection",
     Tiers = {
         normal = {
