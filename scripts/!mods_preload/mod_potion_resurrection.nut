@@ -1,6 +1,6 @@
 ::PotionResurrection <- {
     ID = "mod_potion_resurrection",
-    Version = "1.1.0",
+    Version = "1.1.1",
     Name = "Potion of Resurrection",
     Tiers = {
         normal = {
@@ -30,7 +30,7 @@
     }
 };
 
-::include("scripts/mods/potion_resurrection/compatibility/legends_market_patch");
+::include("scripts/mods/compatibility/legends_market_patch");
 
 ::PotionResurrection.HooksMod <- ::Hooks.register(
     ::PotionResurrection.ID,
