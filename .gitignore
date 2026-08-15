@@ -3,3 +3,7 @@
 dist
 *.json
 build
+docs/
+tools/
+test-results/
+release/
