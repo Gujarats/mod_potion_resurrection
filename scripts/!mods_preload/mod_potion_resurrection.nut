@@ -12,7 +12,7 @@
             StockSetting = "NormalStock"
         },
         medium = {
-            Name = "Medium",
+            Name = "Rare",
             HealthSetting = "MediumHealthPct",
             ArmorSetting = "MediumArmorPct",
             BasePriceSetting = "MediumBasePrice",
@@ -20,7 +20,7 @@
             StockSetting = "MediumStock"
         },
         high = {
-            Name = "High",
+            Name = "Legendary",
             HealthSetting = "HighHealthPct",
             ArmorSetting = "HighArmorPct",
             BasePriceSetting = "HighBasePrice",

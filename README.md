@@ -1,6 +1,6 @@
 # Potion of Resurrection
 
-Potion of Resurrection adds Normal, Medium, and High consumable potions to Battle Brothers. Each potion gives one brother a permanent resurrection charge that is consumed on an eligible battlefield death.
+Potion of Resurrection adds Normal, Rare, and Legendary consumable potions to Battle Brothers. Each potion gives one brother a permanent resurrection charge that is consumed on an eligible battlefield death.
 
 ## Features
 
@@ -8,7 +8,7 @@ Potion of Resurrection adds Normal, Medium, and High consumable potions to Battl
 - Drinking another tier replaces the brother's existing resurrection charge.
 - Restores configured hitpoints and armor on an eligible battlefield death.
 - Excludes Kraken devouring and scripted or cleanup deaths.
-- Adds configurable stock, rarity, price, restoration values, and high-tier settlement restriction through MSU.
+- Adds configurable stock, rarity, price, restoration values, and Legendary-potion settlement restriction through MSU.
 
 ## Required dependencies
 
@@ -28,10 +28,10 @@ The main Potion of Resurrection archive does not require Item Spawner.
 | Tier | Health restored | Armor restored | Base price | Default availability | Default stock |
 |---|---:|---:|---:|---:|---:|
 | Normal | 50% | 25% | 200 crowns | 100% | 2 |
-| Medium | 80% | 50% | 600 crowns | 20% | 1 |
-| High | 100% | 100% | 1,800 crowns | 5% | 1 |
+| Rare | 80% | 50% | 600 crowns | 20% | 1 |
+| Legendary | 100% | 100% | 1,800 crowns | 5% | 1 |
 
-Prices scale from the averaged lowest and highest active roster levels, at 5% per averaged level by default. High potions are restricted to size-3 settlements by default.
+Prices scale from the averaged lowest and highest active roster levels, at 5% per averaged level by default. Legendary potions are restricted to size-3 settlements by default.
 
 ## Installation
 
@@ -43,7 +43,7 @@ Do not remove the main mod from a save while a brother has a resurrection effect
 
 ## Configuration and logging
 
-All gameplay and balance values are configurable through the MSU settings pages: health restoration, armor restoration, base price, level scaling, availability, stock, and High-potion settlement restriction.
+All gameplay and balance values are configurable through the MSU settings pages: health restoration, armor restoration, base price, level scaling, availability, stock, and Legendary-potion settlement restriction.
 
 `Debug Logging` is also available on the MSU General page and defaults to enabled. `[PotionResurrection]` diagnostic output is written to `C:\Users\gujar\Documents\Battle Brothers\log.html`.
 

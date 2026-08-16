@@ -35,15 +35,15 @@ if (!("PotionResurrection" in getroottable()))
 {
 	local general = ::PotionResurrection.Mod.ModSettings.addPage("General");
 	local normal = ::PotionResurrection.Mod.ModSettings.addPage("Normal");
-	local medium = ::PotionResurrection.Mod.ModSettings.addPage("Medium");
-	local high = ::PotionResurrection.Mod.ModSettings.addPage("High");
+	local medium = ::PotionResurrection.Mod.ModSettings.addPage("Rare");
+	local high = ::PotionResurrection.Mod.ModSettings.addPage("Legendary");
 
 	// debug settings
 	::PotionResurrection.configureDebugLogging(general);
 
 	general.addRangeSetting("PriceScalingPct", 0, 0, 100, 1, "Price Scaling per Level (%)", "Applied for each averaged boundary level of the active roster.");
     general.addBooleanSetting("AddPotionsToAllMarketplaces", true, "Add Potions to All Marketplaces", "When enabled, add resurrection potions to northern and southern marketplace inventories using the configured tier chances and stock values.");
-    general.addBooleanSetting("RestrictHighToLargeSettlements", true, "Restrict High Potions", "Only allow High potions in settlements of size 3 or larger.");
+    general.addBooleanSetting("RestrictHighToLargeSettlements", true, "Restrict Legendary Potions", "Only allow Legendary potions in settlements of size 3 or larger.");
 
     normal.addRangeSetting("NormalHealthPct", 50, 1, 100, 1, "Health Restored (%)", "Maximum hitpoints restored when resurrection triggers.");
     normal.addRangeSetting("NormalArmorPct", 25, 0, 100, 1, "Armor Restored (%)", "Maximum head and body armor condition restored.");
