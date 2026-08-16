@@ -5,7 +5,7 @@ this.resurrection_potion_high_item <- this.inherit("scripts/items/misc/resurrect
     {
         this.resurrection_potion_item.create();
         this.m.ID = "misc.resurrection_potion_high";
-        this.m.Name = "Potion of Resurrection - High";
+        this.m.Name = "Potion of Resurrection - Legendary";
         this.m.Description = "A red resurrection potion that anchors a mercenary to life until it has defeated one eligible battlefield death.";
         this.m.Tier = "high";
         this.m.Icon = "consumables/resurrection_potion_high.png";
