@@ -134,35 +134,42 @@
 
 ::PotionResurrection.addCosmeticCorpseDetail <- function( _details, _actor, _tile, _brush, _flip, _color = null, _saturation = null )
 {
-    if (_brush == null || _brush == "" || !_actor.doesBrushExist(_brush))
+    if (_brush == null || _brush == "")
     {
         return;
     }
 
-    local detail = _tile.spawnDetail(
-        _brush,
-        ::Const.Tactical.DetailFlag.SpecialOverlay,
-        _flip,
-        false,
-        ::Const.Combat.HumanCorpseOffset
-    );
-    if (detail == null)
+    try
     {
-        return;
-    }
+        ::PotionResurrection.debugLog("addCosmeticCorpseDetail started for " + _actor.getName() + "; brush=" + _brush + ", flip=" + _flip.tostring());
+        local detail = _tile.spawnDetail(
+            _brush,
+            ::Const.Tactical.DetailFlag.SpecialOverlay,
+            _flip,
+            false,
+            ::Const.Combat.HumanCorpseOffset
+        );
+        if (detail == null)
+        {
+            return;
+        }
 
-    if (_color != null)
-    {
-        detail.Color = _color;
+        if (_color != null)
+        {
+            detail.Color = _color;
+        }
+        if (_saturation != null)
+        {
+            detail.Saturation = _saturation;
+        }
+        detail.Scale = 0.9;
+        detail.Alpha = 0;
+        detail.setBrightness(0.9);
+        _details.push(detail);
     }
-    if (_saturation != null)
-    {
-        detail.Saturation = _saturation;
+    catch (error) {
+        ::PotionResurrection.debugLog("addCosmeticCorpseDetail failed for " + _actor.getName() + ": " + error);
     }
-    detail.Scale = 0.9;
-    detail.Alpha = 0;
-    detail.setBrightness(0.9);
-    _details.push(detail);
 };
 
 // These details intentionally use SpecialOverlay instead of Corpse. They are
@@ -340,7 +347,6 @@
     {
         if (("PotionResurrectionAnimationToken" in actor.m) && actor.m.PotionResurrectionAnimationToken == _data.Token)
         {
-            actor.setPos(actor.createVec(0, 0));
             actor.setAlpha(255);
             actor.m.IsRaising = false;
             actor.m.IsSinking = false;
@@ -366,7 +372,6 @@
         }
 
         local actor = _data.Actor;
-        actor.setPos(actor.createVec(0, 0));
         actor.setAlpha(255);
         actor.m.IsRaising = false;
         actor.m.IsSinking = false;
