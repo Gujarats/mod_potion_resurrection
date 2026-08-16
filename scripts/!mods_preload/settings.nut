@@ -3,7 +3,7 @@ if (!("PotionResurrection" in getroottable()))
 	::PotionResurrection <- {}
 }
 
-// create separate function to debug so that it can be called from the settings callback
+
 ::PotionResurrection.configureDebugLogging <- function()
 {
 	if (::PotionResurrection.Mod.ModSettings.getSetting("DebugLogging").getValue())
@@ -25,11 +25,11 @@ if (!("PotionResurrection" in getroottable()))
 
 	// debug settings
 	local debugLogging = general.addBooleanSetting("DebugLogging", false, "Debug Logging", "Write Potion of Resurrection debug lines to log.html.");
-	debugLogging.addCallback(function( _data = null )
+	debugLogging.addCallback(function( _enabled = null )
     {
-        ::PotionResurrection.configureDebugLogging();
+        ::PotionResurrection.Mod.Debug.setFlag("default", _enabled);
     });
-    ::PotionResurrection.configureDebugLogging();
+	::PotionResurrection.configureDebugLogging();
 
 	general.addRangeSetting("PriceScalingPct", 0, 0, 100, 1, "Price Scaling per Level (%)", "Applied for each averaged boundary level of the active roster.");
     general.addBooleanSetting("AddPotionsToAllMarketplaces", true, "Add Potions to All Marketplaces", "When enabled, add resurrection potions to northern and southern marketplace inventories using the configured tier chances and stock values.");
