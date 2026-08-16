@@ -61,6 +61,4 @@
     {
         ::PotionResurrection.registerVanillaMarketHooks();
     }
-
-    ::PotionResurrection.debugLog("Mod initialized; player.kill hook and market hook registered");
 });
