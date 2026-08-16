@@ -55,7 +55,7 @@ Legends is supported. Potion of Resurrection adds stock after Legends finishes f
 
 The mod uses a simulated death sequence rather than Battle Brothers' real corpse pipeline. On a lethal hit, the actor fades out over 250 ms, remains hidden briefly, then returns with the native rise animation.
 
-This keeps resurrection safe and avoids corpse-side effects, but the simulated death transition can look slightly unusual. The actor does not first play the full vanilla death animation or become a real corpse.
+This keeps resurrection safe and avoids corpse-side effects. The actor fades out with their damaged equipment still visible, a brief cosmetic corpse overlay with a blood burst is shown, then armor restoration is applied as the actor rises. The overlay is not a real corpse: it does not affect tile corpse state, casualties, AI, or existing corpses.
 
 ## Building and validation
 

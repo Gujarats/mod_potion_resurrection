@@ -132,6 +132,106 @@
     item.setCondition(::PotionResurrection.clamp(condition, 0, item.getConditionMax()));
 };
 
+::PotionResurrection.addCosmeticCorpseDetail <- function( _details, _actor, _tile, _brush, _flip, _color = null, _saturation = null )
+{
+    if (_brush == null || _brush == "" || !_actor.doesBrushExist(_brush))
+    {
+        return;
+    }
+
+    local detail = _tile.spawnDetail(
+        _brush,
+        ::Const.Tactical.DetailFlag.SpecialOverlay,
+        _flip,
+        false,
+        ::Const.Combat.HumanCorpseOffset
+    );
+    if (detail == null)
+    {
+        return;
+    }
+
+    if (_color != null)
+    {
+        detail.Color = _color;
+    }
+    if (_saturation != null)
+    {
+        detail.Saturation = _saturation;
+    }
+    detail.Scale = 0.9;
+    detail.Alpha = 0;
+    detail.setBrightness(0.9);
+    _details.push(detail);
+};
+
+// These details intentionally use SpecialOverlay instead of Corpse. They are
+// visual-only and must never affect tile corpse state, casualties, or AI.
+::PotionResurrection.spawnCosmeticCorpse <- function( _actor, _tile )
+{
+    local details = [];
+    if (_actor == null || _tile == null)
+    {
+        return details;
+    }
+
+    try
+    {
+        local flip = ::Math.rand(0, 1) == 1;
+        local body = _actor.getSprite("body");
+        local head = _actor.getSprite("head");
+        local appearance = _actor.getItems().getAppearance();
+        local skinColor = head != null ? head.Color : null;
+        local skinSaturation = head != null ? head.Saturation : null;
+
+        if (body != null && body.HasBrush)
+        {
+            ::PotionResurrection.addCosmeticCorpseDetail(details, _actor, _tile, body.getBrush().Name + "_dead", flip, skinColor, skinSaturation);
+        }
+        if (appearance.CorpseArmor != "")
+        {
+            ::PotionResurrection.addCosmeticCorpseDetail(details, _actor, _tile, appearance.CorpseArmor, flip);
+        }
+        if (head != null && head.HasBrush && !appearance.HideCorpseHead)
+        {
+            ::PotionResurrection.addCosmeticCorpseDetail(details, _actor, _tile, head.getBrush().Name + "_dead", flip, head.Color, head.Saturation);
+        }
+    }
+    catch (error)
+    {
+        ::PotionResurrection.Mod.Debug.printLog("[PotionResurrection] Cosmetic corpse setup failed for " + _actor.getName() + ": " + error);
+    }
+
+    return details;
+};
+
+::PotionResurrection.showCosmeticCorpse <- function( _data )
+{
+    if (!("CosmeticCorpseDetails" in _data))
+    {
+        return;
+    }
+
+    foreach (detail in _data.CosmeticCorpseDetails)
+    {
+        if (detail == null)
+        {
+            continue;
+        }
+
+        try
+        {
+            detail.Alpha = 255;
+            detail.fadeOutAndHide(::PotionResurrection.ResurrectionHiddenDuration);
+        }
+        catch (error)
+        {
+            // A failed overlay animation must not stop the resurrection itself.
+            detail.Alpha = 0;
+        }
+    }
+};
+
 ::PotionResurrection.playResurrectionAnimation <- function( _actor, _source = null )
 {
     if (_actor == null || !_actor.isAlive() || !_actor.isPlacedOnMap())
@@ -296,9 +396,15 @@
         }
 
         local actor = _data.Actor;
+        if (_data.ArmorRestorePct != null)
+        {
+            ::PotionResurrection.restoreArmorSlot(actor, ::Const.ItemSlot.Body, _data.ArmorRestorePct);
+            ::PotionResurrection.restoreArmorSlot(actor, ::Const.ItemSlot.Head, _data.ArmorRestorePct);
+            actor.getItems().updateAppearance();
+        }
         actor.setAlpha(0);
         ::PotionResurrection.playResurrectionAnimation(actor, _data.Source);
-        ::PotionResurrection.debugLog("Resurrection rise started for " + actor.getName());
+        ::PotionResurrection.debugLog("Armor restored and resurrection rise started for " + actor.getName());
         ::Time.scheduleEvent(::TimeUnit.Virtual, ::PotionResurrection.ResurrectionRiseDuration, ::PotionResurrection.finishResurrectionSequence, _data);
     }
     catch (error)
@@ -307,7 +413,29 @@
     }
 };
 
-::PotionResurrection.startResurrectionSequence <- function( _actor, _source = null )
+::PotionResurrection.onResurrectionFadeFinished <- function( _data )
+{
+    try
+    {
+        if (!::PotionResurrection.isResurrectionSequenceCurrent(_data))
+        {
+            ::PotionResurrection.recoverResurrectionSequence(_data, "stale cosmetic corpse callback");
+            return;
+        }
+
+        local actor = _data.Actor;
+        ::PotionResurrection.showCosmeticCorpse(_data);
+        actor.spawnBloodEffect(actor.getTile(), 0.75);
+        ::Time.scheduleEvent(::TimeUnit.Virtual, ::PotionResurrection.ResurrectionHiddenDuration, ::PotionResurrection.onResurrectionHiddenIntervalFinished, _data);
+        ::PotionResurrection.debugLog("Cosmetic corpse shown for " + actor.getName() + "; hiddenDuration=" + ::PotionResurrection.ResurrectionHiddenDuration.tostring());
+    }
+    catch (error)
+    {
+        ::PotionResurrection.recoverResurrectionSequence(_data, "cosmetic corpse error: " + error);
+    }
+};
+
+::PotionResurrection.startResurrectionSequence <- function( _actor, _source = null, _armorRestorePct = null )
 {
     if (_actor == null || !_actor.isAlive() || !_actor.isPlacedOnMap() || ::Tactical.State == null)
     {
@@ -333,7 +461,9 @@
         Token = _actor.m.PotionResurrectionAnimationToken,
         TacticalState = ::Tactical.State,
         TileX = tile.SquareCoords.X,
-        TileY = tile.SquareCoords.Y
+        TileY = tile.SquareCoords.Y,
+        ArmorRestorePct = _armorRestorePct,
+        CosmeticCorpseDetails = ::PotionResurrection.spawnCosmeticCorpse(_actor, tile)
     };
     ::PotionResurrection.ActiveResurrectionSequences[data.Token.tostring()] <- data;
 
@@ -342,9 +472,8 @@
         _actor.m.IsAttackable = false;
         _actor.fadeOut(::PotionResurrection.ResurrectionFadeDuration);
         ::PotionResurrection.debugLog("Simulated death fade started for " + _actor.getName());
-        local delay = ::PotionResurrection.ResurrectionFadeDuration + ::PotionResurrection.ResurrectionHiddenDuration;
-        ::Time.scheduleEvent(::TimeUnit.Virtual, delay, ::PotionResurrection.onResurrectionHiddenIntervalFinished, data);
-        ::PotionResurrection.debugLog("Resurrection rise scheduled for " + _actor.getName() + "; hiddenDuration=" + ::PotionResurrection.ResurrectionHiddenDuration.tostring());
+        ::Time.scheduleEvent(::TimeUnit.Virtual, ::PotionResurrection.ResurrectionFadeDuration, ::PotionResurrection.onResurrectionFadeFinished, data);
+        ::PotionResurrection.debugLog("Cosmetic corpse scheduled for " + _actor.getName());
     }
     catch (error)
     {
@@ -368,16 +497,13 @@
         _actor.m.IsAlive = true;
         _actor.m.IsDying = false;
         _actor.setHitpoints(::PotionResurrection.clamp(hitpoints, 1, _actor.getHitpointsMax()));
-        ::PotionResurrection.restoreArmorSlot(_actor, ::Const.ItemSlot.Body, armorPct);
-        ::PotionResurrection.restoreArmorSlot(_actor, ::Const.ItemSlot.Head, armorPct);
-        _actor.getItems().updateAppearance();
         _actor.getSkills().removeByID("effects.resurrection_potion");
         _actor.getSkills().update();
         _actor.setDirty(true);
         _actor.setMoraleState(::Const.MoraleState.Steady);
 
         ::Tactical.EventLog.logEx(::Const.UI.getColorizedEntityName(_actor) + " is restored by a " + tier.Name + " Potion of Resurrection!");
-        ::PotionResurrection.startResurrectionSequence(_actor, _source);
+        ::PotionResurrection.startResurrectionSequence(_actor, _source, armorPct);
         ::Sound.play("sounds/combat/drink_01.wav", ::Const.Sound.Volume.Tactical, _actor.getPos());
         ::PotionResurrection.debugLog("Resurrection restoration succeeded for " + _actor.getName() + "; hitpoints=" + _actor.getHitpoints().tostring());
         return true;
