@@ -30,7 +30,7 @@
     }
 };
 
-::include("scripts/mods/compatibility/legends_market_patch");
+
 
 ::PotionResurrection.HooksMod <- ::Hooks.register(
     ::PotionResurrection.ID,
@@ -50,8 +50,10 @@
         return ::PotionResurrection.Mod.ModSettings.getSetting(_key).getValue();
     };
     ::PotionResurrection.registerSettings();
+
     ::include("scripts/mods/potion_resurrection_service");
     ::include("scripts/mods/potion_resurrection_market");
+    ::include("scripts/mods/compatibility/legends_market_patch");
 
     if (::Hooks.hasMod("mod_legends"))
     {
