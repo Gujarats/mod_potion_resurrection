@@ -51,19 +51,5 @@ All gameplay and balance values are configurable through the MSU settings pages:
 
 Legends is supported. Potion of Resurrection adds stock after Legends finishes filling marketplace and alchemist stashes. Existing shop stashes receive the new items on their next stock refresh.
 
-## Known visual limitation
-
-The mod uses a simulated death sequence rather than Battle Brothers' real corpse pipeline. On a lethal hit, the actor fades out over 250 ms, remains hidden briefly, then returns with the native rise animation.
-
-This keeps resurrection safe and avoids corpse-side effects. The actor fades out with their damaged equipment still visible, a brief cosmetic corpse overlay with a blood burst is shown, then armor restoration is applied as the actor rises. The overlay is not a real corpse: it does not affect tile corpse state, casualties, AI, or existing corpses.
-
-## Building and validation
-
-From this project directory, run:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\test_potion_resurrection_layout.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\build_release.ps1
-```
-
-The build creates the main mod archive and the optional Item Spawner addon under `release/`. Automated checks do not run the Battle Brothers engine; complete `test-results/potion-resurrection-manual-matrix.md` before publishing a release.
+## Known Issues
+ - after death animation the character became invincible but can be controlled , moving the character do different tile would make them re-appear
