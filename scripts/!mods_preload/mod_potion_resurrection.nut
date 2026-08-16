@@ -30,8 +30,6 @@
     }
 };
 
-
-
 ::PotionResurrection.HooksMod <- ::Hooks.register(
     ::PotionResurrection.ID,
     ::PotionResurrection.Version,
