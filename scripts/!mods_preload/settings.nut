@@ -1,4 +1,4 @@
-if (!("PotionResurrection" in getrootable()))
+if (!("PotionResurrection" in getroottable()))
 {
 	::PotionResurrection <- {}
 }
