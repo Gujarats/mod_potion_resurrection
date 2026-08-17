@@ -45,7 +45,7 @@ Do not remove the main mod from a save while a brother has a resurrection effect
 
 All gameplay and balance values are configurable through the MSU settings pages: health restoration, armor restoration, base price, level scaling, availability, stock, and Legendary-potion settlement restriction.
 
-`Debug Logging` is also available on the MSU General page and defaults to enabled. `[PotionResurrection]` diagnostic output is written to `C:\Users\gujar\Documents\Battle Brothers\log.html`.
+`Debug Logging` is also available on the MSU General page and defaults to enabled. Global Developer Test overrides this value while installed. `[PotionResurrection]` diagnostic output is written to `C:\Users\gujar\Documents\Battle Brothers\log.html`.
 
 ## Legends Compatibility
 

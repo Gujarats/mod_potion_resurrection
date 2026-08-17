@@ -1,6 +1,6 @@
 ::PotionResurrection <- {
     ID = "mod_potion_resurrection",
-    Version = "1.1.4",
+    Version = "1.1.5",
     Name = "Potion of Resurrection",
     Tiers = {
         normal = {
@@ -48,6 +48,7 @@
         return ::PotionResurrection.Mod.ModSettings.getSetting(_key).getValue();
     };
     ::PotionResurrection.registerSettings();
+    ::PotionResurrection.configureDebugLogging();
 
     ::include("scripts/mods/potion_resurrection_service");
     ::include("scripts/mods/potion_resurrection_market");
