@@ -3,32 +3,16 @@ if (!("PotionResurrection" in getroottable()))
 	::PotionResurrection <- {}
 }
 
-// coming from ModSettings parameters:
-// _setting: the setting object to register
-::PotionResurrection.configureDebugLogging <- function(_settings = null)
+::PotionResurrection.configureDebugLogging <- function()
 {
-	if(_settings == null)
+	if ("GuzBluezDebugLogController" in getroottable()
+		&& "registerTarget" in ::GuzBluezDebugLogController)
 	{
+		::GuzBluezDebugLogController.registerTarget(::PotionResurrection.ID, ::PotionResurrection.Mod);
 		return;
 	}
 
-	local debugLogging = _settings.addBooleanSetting("DebugLogging", false, "Debug Logging", "Write Potion of Resurrection debug lines to log.html.");
-	// enable or disable at runtime based on the setting value
-	debugLogging.addCallback(function( _enabled = false )
-    {
-        ::PotionResurrection.Mod.Debug.setFlag("default", _enabled);
-    });
-
-	// set the initial state based on the current setting value
-	// enabled at startup if the setting is true, disabled if false
-	if (::PotionResurrection.Mod.ModSettings.getSetting("DebugLogging").getValue())
-	{
-		::PotionResurrection.Mod.Debug.enable();
-	}
-	else
-	{
-		::PotionResurrection.Mod.Debug.disable();
-	}
+	::PotionResurrection.Mod.Debug.setFlag("default", ::PotionResurrection.Mod.ModSettings.getSetting("DebugLogging").getValue());
 }
 
 ::PotionResurrection.registerSettings <- function()
@@ -38,8 +22,11 @@ if (!("PotionResurrection" in getroottable()))
 	local medium = ::PotionResurrection.Mod.ModSettings.addPage("Rare");
 	local high = ::PotionResurrection.Mod.ModSettings.addPage("Legendary");
 
-	// debug settings
-	::PotionResurrection.configureDebugLogging(general);
+	local debugLogging = general.addBooleanSetting("DebugLogging", false, "Debug Logging", "Write Potion of Resurrection debug lines to log.html.");
+	debugLogging.addCallback(function()
+	{
+		::PotionResurrection.configureDebugLogging();
+	});
 
 	general.addRangeSetting("PriceScalingPct", 0, 0, 100, 1, "Price Scaling per Level (%)", "Applied for each averaged boundary level of the active roster.");
     general.addBooleanSetting("AddPotionsToAllMarketplaces", true, "Add Potions to All Marketplaces", "When enabled, add resurrection potions to northern and southern marketplace inventories using the configured tier chances and stock values.");
